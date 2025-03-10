@@ -1,17 +1,18 @@
 <script lang="ts">
-    import Chart from "chart.js/auto";
-    import {onMount} from "svelte";
-    import {savingsAccounts} from "./utils/savingsAccounts";
-    import annotationPlugin from 'chartjs-plugin-annotation';
-
-    let canvasElement: HTMLCanvasElement;
-
+  import "./app.css";
+  import Chart from "chart.js/auto";
+  import {onMount} from "svelte";
+  import {savingsAccounts} from "./utils/savingsAccounts";
+  import annotationPlugin from 'chartjs-plugin-annotation';
+  
+  let canvasElement: HTMLCanvasElement;
+  
   onMount(() => {
       Chart.register(annotationPlugin)
       const amounts = new Array<number>(151).fill(0).map((_, i) => {
           return i * 1000
       });
-
+  
       new Chart(canvasElement, {
           type: "line",
           data: {
