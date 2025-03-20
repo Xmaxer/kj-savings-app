@@ -1,0 +1,260 @@
+<script lang="ts">
+	import Chart from 'chart.js/auto';
+	import { BankType, savingsAccounts } from '$utils/savingsAccounts';
+	import annotationPlugin from 'chartjs-plugin-annotation';
+	import getTailwindProperty from '../../../utils/getTailwindProperty';
+	import { chart } from '$lib/components/chart/chart.svelte.js';
+	import type { Action } from 'svelte/action';
+	import remToPx from '../../../utils/remToPx.js';
+	import hslPointsToHslString from '../../../utils/hslPointsToHslString.js';
+	import { generalSettingsState } from '$lib/components/chart-controls/general-settings/general-settings-state.svelte';
+
+	let width: number = $state(0);
+	let height: number = $state(0);
+	let canvasRef: HTMLCanvasElement | undefined = $state();
+
+	const amounts = new Array<number>(151).fill(0).map((_, i) => {
+		return i * 1000;
+	});
+
+	const drawGraph = (node: HTMLCanvasElement) => {
+		chart.chart = new Chart(node, {
+			type: 'line',
+			data: {
+				labels: amounts,
+				datasets: [
+					...savingsAccounts.map((account) => {
+						const data = amounts.map((amount) => {
+							return account.interestEarnedOnAmount(amount);
+						});
+						return {
+							label: account.name,
+							data: data,
+							backgroundColor: account.color,
+							borderColor: account.color,
+							fill: false
+						};
+					})
+				]
+			},
+			options: {
+				maintainAspectRatio: false,
+				borderColor: hslPointsToHslString(getTailwindProperty('secondary')),
+				responsive: false,
+				plugins: {
+					tooltip: {
+						backgroundColor: hslPointsToHslString(getTailwindProperty('primary')),
+						titleColor: hslPointsToHslString(getTailwindProperty('primary-foreground')),
+						bodyColor: hslPointsToHslString(getTailwindProperty('primary-foreground')),
+						callbacks: {
+							title: (val) => {
+								return new Intl.NumberFormat('en-IE', {
+									style: 'currency',
+									currency: 'EUR'
+								}).format(parseInt(val[0].label));
+							},
+							label: (val) => {
+								return `Interest earned (${val.dataset.label}): ${new Intl.NumberFormat('en-IE', {
+									style: 'currency',
+									currency: 'EUR'
+								}).format(val.raw as number)}`;
+							}
+						}
+					},
+					annotation: {
+						annotations: {
+							thresholdLine: {
+								type: 'line',
+								display: false,
+								xMin: 0,
+								xMax: 0,
+								borderWidth: 1,
+								borderColor: '#00ffff'
+							},
+							thresholdLineLabel: {
+								type: 'label',
+								xValue: 0,
+								yValue: 0,
+								content: [''],
+								display: false,
+								backgroundColor: hslPointsToHslString(getTailwindProperty('primary')),
+								borderRadius: remToPx(getTailwindProperty('radius')),
+								color: hslPointsToHslString(getTailwindProperty('primary-foreground')),
+								font: {
+									size: 18
+								}
+							}
+						}
+					},
+					legend: {
+						onClick: (e, legendItem, legend) => {
+							console.log(legendItem, legend);
+							const chart = legend.chart;
+							const data = chart.data.datasets[legendItem.datasetIndex as number];
+							console.log(data);
+							// legend.chart.data.datasets[legendItem.datasetIndex as number].borderWidth = 5;
+
+							data.hidden = !data.hidden;
+							data.backgroundColor = data.hidden ? undefined : data.borderColor;
+							chart.update();
+						},
+						// onLeave(e, legendItem, legend) {
+						// 	legend.chart.data.datasets[legendItem.datasetIndex as number].borderWidth = 3;
+						// 	legend.chart.data.datasets[legendItem.datasetIndex as number].backgroundColor =
+						// 		hslPointsToHslString(getTailwindProperty('secondary'));
+						// 	legend.chart.update();
+						// },
+						labels: {
+							color: hslPointsToHslString(getTailwindProperty('primary-foreground')),
+							borderRadius: 5,
+							useBorderRadius: true
+						},
+						position: 'bottom'
+					}
+				},
+				scales: {
+					y: {
+						title: {
+							text: 'Interest earned per annum',
+							display: true,
+							color: hslPointsToHslString(getTailwindProperty('primary-foreground')),
+							font: {
+								size: 18
+							}
+						},
+						ticks: {
+							color: hslPointsToHslString(getTailwindProperty('primary-foreground')),
+							callback(value: number | string) {
+								const val = typeof value === 'number' ? value : parseInt(value, 10);
+								return new Intl.NumberFormat('en-IE', {
+									style: 'currency',
+									currency: 'EUR'
+								}).format(val);
+							}
+						},
+						grid: {
+							color: hslPointsToHslString(getTailwindProperty('primary')),
+							display: false
+						}
+					},
+					x: {
+						title: {
+							text: 'Amount saved at start of year',
+							display: true,
+							color: hslPointsToHslString(getTailwindProperty('primary-foreground')),
+							font: {
+								size: 18
+							}
+						},
+						ticks: {
+							color: hslPointsToHslString(getTailwindProperty('primary-foreground')),
+							autoSkip: true,
+							maxTicksLimit: 15,
+							callback(value: number | string) {
+								const val = (typeof value === 'number' ? value : parseInt(value, 10)) * 1000;
+								return new Intl.NumberFormat('en-IE', {
+									style: 'currency',
+									currency: 'EUR'
+								}).format(val);
+							}
+						},
+						grid: {
+							display: false,
+							color: hslPointsToHslString(getTailwindProperty('primary'))
+						}
+					}
+				},
+				elements: {
+					point: {
+						radius: 0,
+						backgroundColor: '#55555580',
+						hitRadius: 4,
+						hoverRadius: 10
+					}
+				}
+			}
+		});
+	};
+
+	const onChartLoad: Action = (node: HTMLCanvasElement) => {
+		Chart.register(annotationPlugin);
+		drawGraph(node);
+	};
+
+	// const onWindowResize = () => {
+	// 	chartState = {
+	// 		options: chart.chart?.config.options,
+	// 		data: chart.chart?.data
+	// 	};
+	// 	width = 0;
+	// 	height = 0;
+	// };
+	//
+	// const debouncedOnWindowResize = debounce(onWindowResize);
+
+	// onMount(() => {
+	// 	const resizeObserver = new ResizeObserver(() => {
+	// 		debouncedOnWindowResize();
+	// 	});
+	//
+	// 	resizeObserver.observe(containerRef);
+	//
+	// 	return () => {
+	// 		resizeObserver.unobserve(containerRef);
+	// 	};
+	// });
+
+	$effect(() => {
+		if (canvasRef && height && width) {
+			canvasRef.width = width;
+			canvasRef.height = height;
+			chart.chart?.resize(width, height);
+		}
+	});
+
+	const bankTypes = $derived.by(() => {
+		let types = Object.values(BankType);
+		if (!$generalSettingsState.fintechBanksEnabled) {
+			types = types.filter((type) => type !== BankType.FINTECH);
+		}
+		if (!$generalSettingsState.traditionalBanksEnabled) {
+			types = types.filter((type) => type !== BankType.TRADITIONAL_BANK);
+		}
+		return types;
+	});
+
+	$effect(() => {
+		if (chart.chart) {
+			chart.chart.data.datasets = [
+				...savingsAccounts
+					.filter((acc) => bankTypes.includes(acc.bankType))
+					.map((account) => {
+						const data = amounts.map((amount) => {
+							return account.interestEarnedOnAmount(amount, {
+								taxEnabled: !!$generalSettingsState.taxEnabled
+							});
+						});
+						return {
+							label: account.name,
+							data: data,
+							backgroundColor: account.color,
+							borderColor: account.color,
+							fill: false
+						};
+					})
+			];
+
+			chart.chart.update();
+		}
+	});
+</script>
+
+<div class="flex h-full flex-col overflow-hidden text-center">
+	<h1 class="p-8">Interest earned for amount saved per annum</h1>
+	{#if !height && !width}
+		<div bind:clientHeight={height} bind:clientWidth={width} class="flex-grow bg-black"></div>
+	{/if}
+	{#if height && width}
+		<canvas id="graph" use:onChartLoad bind:this={canvasRef} {height} {width}></canvas>
+	{/if}
+</div>
