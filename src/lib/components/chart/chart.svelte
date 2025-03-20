@@ -87,23 +87,6 @@
 						}
 					},
 					legend: {
-						onClick: (e, legendItem, legend) => {
-							console.log(legendItem, legend);
-							const chart = legend.chart;
-							const data = chart.data.datasets[legendItem.datasetIndex as number];
-							console.log(data);
-							// legend.chart.data.datasets[legendItem.datasetIndex as number].borderWidth = 5;
-
-							data.hidden = !data.hidden;
-							data.backgroundColor = data.hidden ? undefined : data.borderColor;
-							chart.update();
-						},
-						// onLeave(e, legendItem, legend) {
-						// 	legend.chart.data.datasets[legendItem.datasetIndex as number].borderWidth = 3;
-						// 	legend.chart.data.datasets[legendItem.datasetIndex as number].backgroundColor =
-						// 		hslPointsToHslString(getTailwindProperty('secondary'));
-						// 	legend.chart.update();
-						// },
 						labels: {
 							color: hslPointsToHslString(getTailwindProperty('primary-foreground')),
 							borderRadius: 5,
@@ -180,29 +163,6 @@
 		Chart.register(annotationPlugin);
 		drawGraph(node);
 	};
-
-	// const onWindowResize = () => {
-	// 	chartState = {
-	// 		options: chart.chart?.config.options,
-	// 		data: chart.chart?.data
-	// 	};
-	// 	width = 0;
-	// 	height = 0;
-	// };
-	//
-	// const debouncedOnWindowResize = debounce(onWindowResize);
-
-	// onMount(() => {
-	// 	const resizeObserver = new ResizeObserver(() => {
-	// 		debouncedOnWindowResize();
-	// 	});
-	//
-	// 	resizeObserver.observe(containerRef);
-	//
-	// 	return () => {
-	// 		resizeObserver.unobserve(containerRef);
-	// 	};
-	// });
 
 	$effect(() => {
 		if (canvasRef && height && width) {

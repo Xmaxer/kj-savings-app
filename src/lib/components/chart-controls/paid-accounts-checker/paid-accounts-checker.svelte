@@ -49,7 +49,7 @@
 			taxEnabled: $generalSettingsState.taxEnabled
 		})?.[0];
 
-		if (!xIntercept) {
+		if (!xIntercept || accountA.slope > accountB.slope) {
 			lineSettings.display = false;
 			lineLabelSettings.display = false;
 			chart.chart.update();
@@ -57,7 +57,9 @@
 			return;
 		}
 
-		console.log(xIntercept);
+		console.log(accountA.slope);
+		console.log(accountB.slope);
+
 		thresholdValue = xIntercept;
 		status = WorthinessStatus.WORTH_IT;
 
