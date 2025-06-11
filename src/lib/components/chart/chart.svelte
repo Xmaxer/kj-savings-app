@@ -2,26 +2,43 @@
 	import Chart from 'chart.js/auto';
 	import { BankType, savingsAccounts } from '$utils/savingsAccounts';
 	import annotationPlugin from 'chartjs-plugin-annotation';
-	import getTailwindProperty from '../../../utils/getTailwindProperty';
+	import getTailwindProperty from '$utils/getTailwindProperty';
 	import { chart } from '$lib/components/chart/chart.svelte.js';
 	import type { Action } from 'svelte/action';
-	import remToPx from '../../../utils/remToPx.js';
-	import hslPointsToHslString from '../../../utils/hslPointsToHslString.js';
-	import { generalSettingsState } from '$lib/components/chart-controls/general-settings/general-settings-state.svelte';
+	import remToPx from '$utils/remToPx.js';
+	import hslPointsToHslString from '$utils/hslPointsToHslString.js';
+	import { getGeneralSettingsState } from '$lib/components/chart-controls/general-settings/general-settings-state.svelte';
+	import { formatToCurrency } from '$utils/currency';
 
 	let width: number = $state(0);
 	let height: number = $state(0);
 	let canvasRef: HTMLCanvasElement | undefined = $state();
 
-	const amounts = new Array<number>(151).fill(0).map((_, i) => {
-		return i * 1000;
-	});
+	const generalSettings = getGeneralSettingsState();
+
+	const amounts = $derived([
+		...new Set(
+			new Array<number>(Math.floor(generalSettings.maxAmountSaved / 1000)).fill(0).map((_, i) => {
+				const value = i * 1000;
+
+				if (value > generalSettings.maxAmountSaved) {
+					return generalSettings.maxAmountSaved;
+				}
+
+				if (value < generalSettings.minAmountSaved) {
+					return generalSettings.minAmountSaved;
+				}
+
+				return value;
+			})
+		)
+	]);
 
 	const drawGraph = (node: HTMLCanvasElement) => {
 		chart.chart = new Chart(node, {
 			type: 'line',
 			data: {
-				labels: amounts,
+				labels: amounts.map((x) => x.toString()),
 				datasets: [
 					...savingsAccounts.map((account) => {
 						const data = amounts.map((amount) => {
@@ -48,16 +65,10 @@
 						bodyColor: hslPointsToHslString(getTailwindProperty('primary-foreground')),
 						callbacks: {
 							title: (val) => {
-								return new Intl.NumberFormat('en-IE', {
-									style: 'currency',
-									currency: 'EUR'
-								}).format(parseInt(val[0].label));
+								return formatToCurrency(val[0].label);
 							},
 							label: (val) => {
-								return `Interest earned (${val.dataset.label}): ${new Intl.NumberFormat('en-IE', {
-									style: 'currency',
-									currency: 'EUR'
-								}).format(val.raw as number)}`;
+								return `Interest earned (${val.dataset.label}): ${formatToCurrency(val.raw as number)}`;
 							}
 						}
 					},
@@ -109,10 +120,7 @@
 							color: hslPointsToHslString(getTailwindProperty('primary-foreground')),
 							callback(value: number | string) {
 								const val = typeof value === 'number' ? value : parseInt(value, 10);
-								return new Intl.NumberFormat('en-IE', {
-									style: 'currency',
-									currency: 'EUR'
-								}).format(val);
+								return formatToCurrency(val);
 							}
 						},
 						grid: {
@@ -133,12 +141,11 @@
 							color: hslPointsToHslString(getTailwindProperty('primary-foreground')),
 							autoSkip: true,
 							maxTicksLimit: 15,
-							callback(value: number | string) {
-								const val = (typeof value === 'number' ? value : parseInt(value, 10)) * 1000;
-								return new Intl.NumberFormat('en-IE', {
-									style: 'currency',
-									currency: 'EUR'
-								}).format(val);
+							callback(index: number | string) {
+								const amount = parseInt(
+									this.getLabelForValue(typeof index === 'number' ? index : parseInt(index, 10))
+								);
+								return formatToCurrency(amount);
 							}
 						},
 						grid: {
@@ -174,10 +181,10 @@
 
 	const bankTypes = $derived.by(() => {
 		let types = Object.values(BankType);
-		if (!$generalSettingsState.fintechBanksEnabled) {
+		if (!generalSettings.fintechBanksEnabled) {
 			types = types.filter((type) => type !== BankType.FINTECH);
 		}
-		if (!$generalSettingsState.traditionalBanksEnabled) {
+		if (!generalSettings.traditionalBanksEnabled) {
 			types = types.filter((type) => type !== BankType.TRADITIONAL_BANK);
 		}
 		return types;
@@ -191,7 +198,7 @@
 					.map((account) => {
 						const data = amounts.map((amount) => {
 							return account.interestEarnedOnAmount(amount, {
-								taxEnabled: !!$generalSettingsState.taxEnabled
+								taxEnabled: !!generalSettings.taxEnabled
 							});
 						});
 						return {
@@ -203,6 +210,7 @@
 						};
 					})
 			];
+			chart.chart.data.labels = [...amounts];
 
 			chart.chart.update();
 		}
@@ -211,7 +219,7 @@
 
 <div class="flex h-full flex-col overflow-hidden text-center">
 	<h1 class="p-8">Interest earned for amount saved per annum</h1>
-	{#if !height && !width}
+	{#if !height || !width}
 		<div bind:clientHeight={height} bind:clientWidth={width} class="flex-grow bg-black"></div>
 	{/if}
 	{#if height && width}

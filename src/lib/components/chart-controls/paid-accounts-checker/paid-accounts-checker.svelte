@@ -2,28 +2,30 @@
 	import { chart } from '$lib/components/chart/chart.svelte.js';
 	import { savingsAccounts } from '$utils/savingsAccounts';
 	import { savingsIntersect } from '$utils/savingsAccounts';
-	import { Button } from '$lib/shadcn/ui/button';
+	import { Button } from '$lib/components/ui/button';
 	import {
 		SelectContent,
 		SelectItem,
 		SelectTrigger,
-		SelectValue,
 		SelectGroup,
 		Select
-	} from '$lib/shadcn/ui/select';
-	import { generalSettingsState } from '../general-settings/general-settings-state.svelte';
+	} from '$lib/components/ui/select';
+	import { getGeneralSettingsState } from '$lib/components/chart-controls/general-settings/general-settings-state.svelte';
+	import { formatToCurrency } from '$utils/currency';
 
 	const WorthinessStatus = {
 		WORTH_IT: 'WORTH_IT',
 		NOT_WORTH_IT: 'NOT_WORTH_IT'
 	} as const;
 
-	let firstSelectedAccount: string | undefined = $state();
 	let secondSelectedAccount: string | undefined = $state();
+	let firstSelectedAccount: string | undefined = $state();
 	let key = $state(new Date());
 
 	let status: keyof typeof WorthinessStatus | undefined = $state();
 	let thresholdValue = $state(0);
+
+	const generalSettings = getGeneralSettingsState();
 
 	$effect(() => {
 		if (!chart.chart) return;
@@ -38,15 +40,15 @@
 			return;
 		}
 
-		const accountA = savingsAccounts.find((acc) => acc.name === firstSelectedAccount);
-		const accountB = savingsAccounts.find((acc) => acc.name === secondSelectedAccount);
+		const accountA = savingsAccounts.find((acc) => acc.name === secondSelectedAccount);
+		const accountB = savingsAccounts.find((acc) => acc.name === firstSelectedAccount);
 
 		if (!accountA || !accountB) {
 			return;
 		}
 
 		const xIntercept = savingsIntersect(accountA, accountB, {
-			taxEnabled: $generalSettingsState.taxEnabled
+			taxEnabled: generalSettings.taxEnabled
 		})?.[0];
 
 		if (!xIntercept || accountA.slope > accountB.slope) {
@@ -72,21 +74,15 @@
 		lineLabelSettings.display = true;
 		lineLabelSettings.xValue = newX;
 		lineLabelSettings.yValue = undefined;
-		lineLabelSettings.content = [
-			'Worth it after:',
-			new Intl.NumberFormat('en-IE', {
-				style: 'currency',
-				currency: 'EUR'
-			}).format(xIntercept)
-		];
+		lineLabelSettings.content = ['Worth it after:', formatToCurrency(xIntercept)];
 
 		chart.chart.update();
 	});
 
 	const onReset = () => {
 		key = new Date();
-		firstSelectedAccount = undefined;
 		secondSelectedAccount = undefined;
+		firstSelectedAccount = undefined;
 	};
 </script>
 
@@ -95,18 +91,19 @@
 		<p>When is</p>
 		{#key key}
 			<Select
-				onSelectedChange={(v) => {
-					secondSelectedAccount = v?.value?.toString();
+				type="single"
+				onValueChange={(v) => {
+					firstSelectedAccount = v?.toString();
 				}}
 			>
 				<SelectTrigger class="w-[180px]">
-					<SelectValue placeholder="Savings account" />
+					{firstSelectedAccount ?? 'Savings account'}
 				</SelectTrigger>
 				<SelectContent>
 					<SelectGroup>
 						{#each savingsAccounts.filter((sa) => !!sa.yearlyAccountCost) as account (account.name)}
 							<SelectItem
-								disabled={firstSelectedAccount === account.name}
+								disabled={secondSelectedAccount === account.name}
 								value={account.name}
 								label={account.name}
 							/>
@@ -118,18 +115,19 @@
 		<p>worth it compared to</p>
 		{#key key}
 			<Select
-				onSelectedChange={(v) => {
-					firstSelectedAccount = v?.value?.toString();
+				type="single"
+				onValueChange={(v) => {
+					secondSelectedAccount = v?.toString();
 				}}
 			>
 				<SelectTrigger class="w-[180px]">
-					<SelectValue placeholder="Savings account" />
+					{secondSelectedAccount ?? 'Savings account'}
 				</SelectTrigger>
 				<SelectContent>
 					<SelectGroup>
 						{#each savingsAccounts as account (account.name)}
 							<SelectItem
-								disabled={secondSelectedAccount === account.name}
+								disabled={firstSelectedAccount === account.name}
 								value={account.name}
 								label={account.name}
 							/>
@@ -141,17 +139,11 @@
 		<p>?</p>
 	</div>
 	{#if status === WorthinessStatus.NOT_WORTH_IT}
-		<p>{`${secondSelectedAccount} is never worth it over ${firstSelectedAccount}`}</p>
+		<p>{`${firstSelectedAccount} is never worth it over ${secondSelectedAccount}`}</p>
 	{:else if status === WorthinessStatus.WORTH_IT}
 		<p>
-			{`${secondSelectedAccount} is better than ${firstSelectedAccount} after reaching ${new Intl.NumberFormat(
-				'en-IE',
-				{
-					style: 'currency',
-					currency: 'EUR'
-				}
-			).format(thresholdValue)} in savings`}
+			{`${firstSelectedAccount} is better than ${secondSelectedAccount} after reaching ${formatToCurrency(thresholdValue)} in savings`}
 		</p>
 	{/if}
-	<Button on:click={onReset} variant="secondary">Reset</Button>
+	<Button onclick={onReset} variant="secondary">Reset</Button>
 </div>

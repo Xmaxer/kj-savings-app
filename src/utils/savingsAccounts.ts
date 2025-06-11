@@ -106,7 +106,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 	},
 	{
 		name: 'Revolut Premium',
-		interestRate: 0.021,
+		interestRate: 0.0185,
 		tax: 0.33,
 		cashLimit: 100000,
 		paymentFrequency: 365,
@@ -121,7 +121,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 	},
 	{
 		name: 'Revolut Metal',
-		interestRate: 0.025,
+		interestRate: 0.02,
 		tax: 0.33,
 		cashLimit: 100000,
 		paymentFrequency: 365,
@@ -136,7 +136,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 	},
 	{
 		name: 'Revolut Ultra',
-		interestRate: 0.03,
+		interestRate: 0.025,
 		tax: 0.33,
 		cashLimit: 100000,
 		paymentFrequency: 365,
@@ -151,7 +151,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 	},
 	{
 		name: 'Bunq',
-		interestRate: 0.0201,
+		interestRate: 0.0151,
 		tax: 0.33,
 		cashLimit: 100000,
 		paymentFrequency: 365,
@@ -165,7 +165,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 	},
 	{
 		name: 'Trading 212',
-		interestRate: 0.027,
+		interestRate: 0.024,
 		tax: 0.33,
 		paymentFrequency: 365,
 		color: '#0086B4',
@@ -178,7 +178,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 	},
 	{
 		name: 'Trade Republic',
-		interestRate: 0.025,
+		interestRate: 0.02,
 		tax: 0.33,
 		paymentFrequency: 365,
 		cashLimit: 50000,
@@ -192,7 +192,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 	},
 	{
 		name: 'PTSB Regular saver',
-		interestRate: 0.025,
+		interestRate: 0.02,
 		tax: 0.33,
 		paymentFrequency: 1,
 		cashLimit: 50000,
@@ -206,7 +206,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 	},
 	{
 		name: 'PTSB Fixed Term 1 year',
-		interestRate: 0.0275,
+		interestRate: 0.0224,
 		tax: 0.33,
 		paymentFrequency: 1,
 		color: '#08ffff',
