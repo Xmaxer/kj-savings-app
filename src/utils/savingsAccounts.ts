@@ -166,7 +166,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 	{
 		name: 'Trading 212',
 		interestRate: 0.022,
-		tax: 0.33,
+		tax: 0.41,
 		paymentFrequency: 365,
 		color: '#0086B4',
 		numberOfYears: 1,
