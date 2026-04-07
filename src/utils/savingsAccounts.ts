@@ -16,6 +16,7 @@ export interface SavingsAccount {
 	cashLimit?: number;
 	paymentFrequency: number;
 	color: string;
+	dashed?: boolean;
 	numberOfYears: number;
 	slope: number;
 	bankType: BankType;
@@ -81,7 +82,8 @@ export const savingsAccounts: Array<SavingsAccount> = [
 		tax: 0.33,
 		cashLimit: 100000,
 		paymentFrequency: 365,
-		color: '#ff0000',
+		color: '#dbeafe',
+		dashed: true,
 		numberOfYears: 1,
 		bankType: BankType.FINTECH,
 		get slope() {
@@ -96,7 +98,8 @@ export const savingsAccounts: Array<SavingsAccount> = [
 		cashLimit: 100000,
 		paymentFrequency: 365,
 		yearlyAccountCost: 40,
-		color: '#000eff',
+		color: '#bfdbfe',
+		dashed: true,
 		numberOfYears: 1,
 		bankType: BankType.FINTECH,
 		get slope() {
@@ -111,7 +114,8 @@ export const savingsAccounts: Array<SavingsAccount> = [
 		cashLimit: 100000,
 		paymentFrequency: 365,
 		yearlyAccountCost: 90,
-		color: '#7cff00',
+		color: '#93c5fd',
+		dashed: true,
 		numberOfYears: 1,
 		bankType: BankType.FINTECH,
 		get slope() {
@@ -126,7 +130,8 @@ export const savingsAccounts: Array<SavingsAccount> = [
 		cashLimit: 100000,
 		paymentFrequency: 365,
 		yearlyAccountCost: 155,
-		color: '#ffb90c',
+		color: '#60a5fa',
+		dashed: true,
 		numberOfYears: 1,
 		bankType: BankType.FINTECH,
 		get slope() {
@@ -141,7 +146,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 		cashLimit: 100000,
 		paymentFrequency: 365,
 		yearlyAccountCost: 540,
-		color: '#787878',
+		color: '#3b82f6',
 		numberOfYears: 1,
 		bankType: BankType.FINTECH,
 		get slope() {
@@ -155,7 +160,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 		tax: 0.33,
 		cashLimit: 100000,
 		paymentFrequency: 365,
-		color: '#ff5800',
+		color: '#fb923c',
 		numberOfYears: 1,
 		bankType: BankType.FINTECH,
 		get slope() {
@@ -168,7 +173,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 		interestRate: 0.03,
 		tax: 0.41,
 		paymentFrequency: 365,
-		color: '#0086B4',
+		color: '#34d399',
 		numberOfYears: 1,
 		bankType: BankType.FINTECH,
 		get slope() {
@@ -182,7 +187,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 		tax: 0.33,
 		paymentFrequency: 365,
 		cashLimit: 50000,
-		color: '#ffffff',
+		color: '#a78bfa',
 		numberOfYears: 1,
 		bankType: BankType.FINTECH,
 		get slope() {
@@ -196,7 +201,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 		tax: 0.33,
 		paymentFrequency: 1,
 		cashLimit: 50000,
-		color: '#054300',
+		color: '#f472b6',
 		numberOfYears: 1,
 		bankType: BankType.TRADITIONAL_BANK,
 		get slope() {
@@ -209,7 +214,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 		interestRate: 0.02,
 		tax: 0.33,
 		paymentFrequency: 1,
-		color: '#08ffff',
+		color: '#facc15',
 		numberOfYears: 1,
 		bankType: BankType.TRADITIONAL_BANK,
 		get slope() {

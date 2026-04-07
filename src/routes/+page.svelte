@@ -1,13 +1,13 @@
 <script>
-	import ChartControls from '$lib/components/chart-controls/chart-controls.svelte';
+	import Sidebar from '$lib/components/sidebar/sidebar.svelte';
 	import Chart from '$lib/components/chart/chart.svelte';
 </script>
 
-<div class="m-8 flex flex-grow flex-col gap-4">
-	<div class="h-[300px] rounded-xl bg-secondary p-8">
-		<ChartControls />
-	</div>
-	<div class="flex-grow rounded-xl bg-secondary p-8">
+<div style="display:flex; width:100%; height:100vh; gap:16px; padding:16px; box-sizing:border-box;">
+	<Sidebar />
+	<div
+		style="flex:1; min-width:0; min-height:0; background:rgba(20,16,50,0.85); border:1px solid rgba(255,255,255,0.14); border-radius:16px; overflow:hidden; display:flex; flex-direction:column;"
+	>
 		<Chart />
 	</div>
 </div>
