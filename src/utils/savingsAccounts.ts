@@ -77,7 +77,7 @@ export function savingsIntersect(
 export const savingsAccounts: Array<SavingsAccount> = [
 	{
 		name: 'Revolut Standard',
-		interestRate: 0.017,
+		interestRate: 0.015,
 		tax: 0.33,
 		cashLimit: 100000,
 		paymentFrequency: 365,
@@ -91,7 +91,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 	},
 	{
 		name: 'Revolut Plus',
-		interestRate: 0.017,
+		interestRate: 0.015,
 		tax: 0.33,
 		cashLimit: 100000,
 		paymentFrequency: 365,
@@ -106,7 +106,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 	},
 	{
 		name: 'Revolut Premium',
-		interestRate: 0.0185,
+		interestRate: 0.0175,
 		tax: 0.33,
 		cashLimit: 100000,
 		paymentFrequency: 365,
@@ -136,7 +136,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 	},
 	{
 		name: 'Revolut Ultra',
-		interestRate: 0.025,
+		interestRate: 0.0225,
 		tax: 0.33,
 		cashLimit: 100000,
 		paymentFrequency: 365,
@@ -165,7 +165,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 	},
 	{
 		name: 'Trading 212',
-		interestRate: 0.022,
+		interestRate: 0.03,
 		tax: 0.41,
 		paymentFrequency: 365,
 		color: '#0086B4',
@@ -206,7 +206,7 @@ export const savingsAccounts: Array<SavingsAccount> = [
 	},
 	{
 		name: 'PTSB Fixed Term 1 year',
-		interestRate: 0.0224,
+		interestRate: 0.02,
 		tax: 0.33,
 		paymentFrequency: 1,
 		color: '#08ffff',
